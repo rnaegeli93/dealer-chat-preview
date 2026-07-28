@@ -17,81 +17,27 @@
     if (!companyId || !dataSettings) {
       window.location.replace("index.html");
     } else {
-      const widgetScript = document.createElement("script");
+      const safeCompanyId = encodeURIComponent(companyId);
 
-      widgetScript.id = "path-widget-tag";
-
-      widgetScript.src =
-        "https://ep.chatpath.com/widget.js?companyId=" +
-        encodeURIComponent(companyId);
-
-      widgetScript.async = true;
-
-      widgetScript.setAttribute(
-        "data-company",
-        companyId
+      document.write(
+        '<script ' +
+          'id="path-widget-tag" ' +
+          'src="https://ep.chatpath.com/widget.js?companyId=' +
+          safeCompanyId +
+          '" ' +
+          'async ' +
+          'data-company="' +
+          companyId.replace(/"/g, "&quot;") +
+          '" ' +
+          'data-settings="' +
+          dataSettings.replace(/"/g, "&quot;") +
+          '">' +
+        '<\/script>'
       );
-
-      widgetScript.setAttribute(
-        "data-settings",
-        dataSettings
-      );
-
-      document.head.appendChild(widgetScript);
     }
   </script>
 </head>
 
 <body>
-  <h1>Response Path Preview</h1>
-
-  <p>
-    Company ID:
-    <strong id="companyDisplay"></strong>
-  </p>
-
-  <p>
-    Data Settings:
-    <strong id="settingsDisplay"></strong>
-  </p>
-
-  <p id="widgetStatus">
-    Loading Response Path chat...
-  </p>
-
-  <script>
-    const companyDisplay =
-      sessionStorage.getItem("companyId");
-
-    const settingsDisplay =
-      sessionStorage.getItem("dataSettings");
-
-    document.getElementById(
-      "companyDisplay"
-    ).textContent = companyDisplay || "";
-
-    document.getElementById(
-      "settingsDisplay"
-    ).textContent = settingsDisplay || "";
-
-    const widgetTag =
-      document.getElementById("path-widget-tag");
-
-    if (widgetTag) {
-      widgetTag.addEventListener("load", function () {
-        document.getElementById(
-          "widgetStatus"
-        ).textContent =
-          "Response Path script loaded.";
-      });
-
-      widgetTag.addEventListener("error", function () {
-        document.getElementById(
-          "widgetStatus"
-        ).textContent =
-          "The Response Path script could not be loaded.";
-      });
-    }
-  </script>
 </body>
 </html>
