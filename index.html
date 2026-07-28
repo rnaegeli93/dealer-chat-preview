@@ -233,268 +233,157 @@
 </head>
 
 <body>
-  <main id="setupScreen">
+
+<main id="setupScreen">
+
     <section class="preview-card">
-      <h1 class="preview-title">See Response Path on Your Website</h1>
 
-      <div class="preview-content">
-        <p class="section-heading">
-          Enter the website URL of the site you would like to preview:
-        </p>
+        <h1 class="preview-title">
+            See Response Path on Your Website
+        </h1>
 
-        <div class="website-section">
-          <label for="websiteUrl" class="field-label" style="display:none;">
-            Website URL
-          </label>
+        <div class="preview-content">
 
-          <input
-            id="websiteUrl"
-            class="text-input"
-            type="text"
-            inputmode="url"
-            placeholder="your website (abc.com)"
-            autocomplete="url"
-          >
+            <p class="section-heading">
+                Enter the website URL of the site you would like to preview:
+            </p>
+
+            <div class="website-section">
+
+                <input
+                    id="websiteUrl"
+                    class="text-input"
+                    type="text"
+                    placeholder="your website (abc.com)"
+                    autocomplete="off">
+
+            </div>
+
+            <p class="section-heading">
+                Edit your Response Path account details below:
+            </p>
+
+            <div class="account-grid">
+
+                <div class="account-box">
+
+                    <label class="field-label">
+                        Enter your RP Company ID
+                    </label>
+
+                    <input
+                        id="companyId"
+                        class="text-input small-input"
+                        type="text"
+                        value="p1512">
+
+                </div>
+
+                <div class="account-box">
+
+                    <label class="field-label">
+                        Enter your RP Data Settings
+                    </label>
+
+                    <input
+                        id="dataSettings"
+                        class="text-input small-input"
+                        type="text"
+                        value="5cb8d857d50d3300">
+
+                </div>
+
+            </div>
+
+            <div class="button-row">
+
+                <button
+                    id="showPreviewButton"
+                    class="preview-button"
+                    type="button">
+
+                    Show Preview
+
+                </button>
+
+            </div>
+
+            <p class="instruction">
+                Please use an incognito tab or clear your browser cookies
+                to ensure the preview functions properly.
+            </p>
+
+            <p
+                id="errorMessage"
+                class="error-message"
+                style="display:none;color:red;">
+            </p>
+
         </div>
 
-        <p class="section-heading">
-          Edit your Response Path account details below:
-        </p>
-
-        <div class="account-grid">
-          <div class="account-box">
-            <label for="companyId" class="field-label">
-              Enter your RP Company ID
-            </label>
-
-            <input
-              id="companyId"
-              class="text-input small-input"
-              type="text"
-              value="p1512"
-            >
-          </div>
-
-          <div class="account-box">
-            <label for="deskId" class="field-label">
-              Enter your RP Desk ID
-            </label>
-
-            <input
-              id="deskId"
-              class="text-input small-input"
-              type="text"
-              value="5cb8d857d50d3300"
-            >
-          </div>
-        </div>
-
-        <div class="button-row">
-          <button id="showPreviewButton" class="preview-button" type="button">
-            Show Preview
-          </button>
-        </div>
-
-        <p class="instruction">
-          Please use an incognito tab or clear your browser cookies<br>
-          to ensure the preview functions properly.
-        </p>
-
-        <p id="errorMessage" class="error-message" role="alert"></p>
-      </div>
     </section>
-  </main>
 
-  <section id="previewScreen">
-    <div class="preview-toolbar">
-      <button id="backButton" class="toolbar-button" type="button">
-        Edit Preview
-      </button>
+</main>
 
-      <button id="openWebsiteButton" class="toolbar-button" type="button">
-        Open Website
-      </button>
-    </div>
+<script>
 
-    <iframe
-      id="dealerFrame"
-      title="Dealer website preview"
-      referrerpolicy="no-referrer-when-downgrade"
-    ></iframe>
-  </section>
+const websiteInput = document.getElementById("websiteUrl");
+const companyInput = document.getElementById("companyId");
+const settingsInput = document.getElementById("dataSettings");
 
-  <script>
-    const setupScreen = document.getElementById("setupScreen");
-    const previewScreen = document.getElementById("previewScreen");
-    const dealerFrame = document.getElementById("dealerFrame");
+const previewButton = document.getElementById("showPreviewButton");
+const errorMessage = document.getElementById("errorMessage");
 
-    const websiteUrlInput = document.getElementById("websiteUrl");
-    const companyIdInput = document.getElementById("companyId");
-    const deskIdInput = document.getElementById("deskId");
+function normalizeUrl(url){
 
-    const showPreviewButton = document.getElementById("showPreviewButton");
-    const backButton = document.getElementById("backButton");
-    const openWebsiteButton = document.getElementById("openWebsiteButton");
-    const errorMessage = document.getElementById("errorMessage");
+    url = url.trim();
 
-    function normalizeUrl(value) {
-      let url = value.trim();
-
-      if (!url) {
-        return "";
-      }
-
-      if (
-        !url.startsWith("https://") &&
-        !url.startsWith("http://")
-      ) {
+    if(
+        !url.startsWith("http://") &&
+        !url.startsWith("https://")
+    ){
         url = "https://" + url;
-      }
-
-      return url;
     }
 
-    function isValidUrl(value) {
-      try {
-        const url = new URL(value);
-        return url.protocol === "https:" || url.protocol === "http:";
-      } catch {
-        return false;
-      }
-    }
+    return url;
 
-    function showError(message) {
-      errorMessage.textContent = message;
-      errorMessage.style.display = "block";
-    }
+}
 
-    function clearError() {
-      errorMessage.textContent = "";
-      errorMessage.style.display = "none";
-    }
+previewButton.addEventListener("click",function(){
 
-    function updateBrowserUrl(site, companyId, deskId) {
-      const previewUrl = new URL(window.location.href);
+    errorMessage.style.display = "none";
 
-      previewUrl.searchParams.set("site", site);
-      previewUrl.searchParams.set("company", companyId);
-      previewUrl.searchParams.set("desk", deskId);
+    const website = normalizeUrl(websiteInput.value);
 
-      window.history.replaceState({}, "", previewUrl);
-    }
+    if(website === "https://"){
 
-    function showPreview() {
-      clearError();
+        errorMessage.innerText = "Please enter a website.";
 
-      const site = normalizeUrl(websiteUrlInput.value);
-      const companyId = companyIdInput.value.trim();
-      const deskId = deskIdInput.value.trim();
+        errorMessage.style.display = "block";
 
-      if (!site) {
-        showError("Enter a dealership website URL.");
-        websiteUrlInput.focus();
         return;
-      }
 
-      if (!isValidUrl(site)) {
-        showError("Enter a valid website URL, such as abcdealer.com.");
-        websiteUrlInput.focus();
-        return;
-      }
-
-      if (!companyId) {
-        showError("Enter an RP Company ID.");
-        companyIdInput.focus();
-        return;
-      }
-
-      if (!deskId) {
-        showError("Enter an RP Desk ID.");
-        deskIdInput.focus();
-        return;
-      }
-
-      websiteUrlInput.value = site;
-      dealerFrame.src = site;
-
-      updateBrowserUrl(site, companyId, deskId);
-
-      setupScreen.style.display = "none";
-      previewScreen.style.display = "block";
-      document.body.classList.add("preview-active");
-
-      /*
-        Add the actual Response Path preview or widget script here.
-
-        Example structure:
-
-        const rpScript = document.createElement("script");
-        rpScript.src = "YOUR-RESPONSE-PATH-SCRIPT-URL";
-        rpScript.dataset.companyId = companyId;
-        rpScript.dataset.deskId = deskId;
-        document.body.appendChild(rpScript);
-
-        The exact script URL and required attributes will depend on
-        the installation code provided by Response Path.
-      */
     }
 
-    function returnToSetup() {
-      previewScreen.style.display = "none";
-      setupScreen.style.display = "flex";
-      document.body.classList.remove("preview-active");
-    }
+    sessionStorage.setItem(
+        "dealerWebsite",
+        website
+    );
 
-    function loadValuesFromUrl() {
-      const params = new URLSearchParams(window.location.search);
+    sessionStorage.setItem(
+        "companyId",
+        companyInput.value.trim()
+    );
 
-      const site = params.get("site");
-      const companyId = params.get("company");
-      const deskId = params.get("desk");
+    sessionStorage.setItem(
+        "dataSettings",
+        settingsInput.value.trim()
+    );
 
-      if (site) {
-        websiteUrlInput.value = site;
-      }
+    window.location.href = "preview.html";
 
-      if (companyId) {
-        companyIdInput.value = companyId;
-      }
+});
 
-      if (deskId) {
-        deskIdInput.value = deskId;
-      }
-    }
+</script>
 
-    showPreviewButton.addEventListener("click", showPreview);
-    backButton.addEventListener("click", returnToSetup);
-
-    openWebsiteButton.addEventListener("click", function () {
-      const site = normalizeUrl(websiteUrlInput.value);
-
-      if (site) {
-        window.open(site, "_blank", "noopener,noreferrer");
-      }
-    });
-
-    websiteUrlInput.addEventListener("keydown", function (event) {
-      if (event.key === "Enter") {
-        showPreview();
-      }
-    });
-
-    companyIdInput.addEventListener("keydown", function (event) {
-      if (event.key === "Enter") {
-        showPreview();
-      }
-    });
-
-    deskIdInput.addEventListener("keydown", function (event) {
-      if (event.key === "Enter") {
-        showPreview();
-      }
-    });
-
-    loadValuesFromUrl();
-  </script>
 </body>
-</html>
