@@ -9,57 +9,82 @@
     >
 
     <title>Response Path Preview</title>
+
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #websiteFrame {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            background: white;
+        }
+
+        #status {
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: 999999;
+            padding: 10px 14px;
+            border-radius: 6px;
+            background: rgba(0, 0, 0, 0.75);
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+        }
+    </style>
 </head>
 
 <body>
 
-    <h1>Response Path Preview</h1>
+    <iframe
+        id="websiteFrame"
+        title="Dealership website preview"
+    ></iframe>
 
-    <p>
-        The chat should appear in the lower-right corner.
-    </p>
-
-    <p>
-        <strong>Company ID:</strong>
-        <span id="companyIdDisplay"></span>
-    </p>
-
-    <p>
-        <strong>Webdesk ID:</strong>
-        <span id="webdeskIdDisplay"></span>
-    </p>
-
-    <p>
-        <strong>Website:</strong>
-        <span id="websiteDisplay"></span>
-    </p>
+    <div id="status">
+        Loading preview...
+    </div>
 
     <script>
         const params = new URLSearchParams(window.location.search);
 
         const companyId = params.get("companyId");
-        const webdeskId =
-            params.get("webdeskId") ||
-            params.get("dataSettings");
+        const webdeskId = params.get("webdeskId");
+        let website = params.get("url") || params.get("website");
 
-        const website =
-            params.get("url") ||
-            params.get("website");
+        if (
+            website &&
+            !website.startsWith("http://") &&
+            !website.startsWith("https://")
+        ) {
+            website = "https://" + website;
+        }
 
-        document.getElementById("companyIdDisplay").textContent =
-            companyId || "Not provided";
+        const frame = document.getElementById("websiteFrame");
+        const status = document.getElementById("status");
 
-        document.getElementById("webdeskIdDisplay").textContent =
-            webdeskId || "Not provided";
+        if (website) {
+            frame.src = website;
 
-        document.getElementById("websiteDisplay").textContent =
-            website || "Not provided";
+            frame.addEventListener("load", function () {
+                status.style.display = "none";
+            });
+        } else {
+            status.textContent = "No website URL was provided.";
+        }
 
         if (!companyId || !webdeskId) {
-            document.body.insertAdjacentHTML(
-                "beforeend",
-                "<p><strong>Missing companyId or webdeskId.</strong></p>"
-            );
+            status.textContent =
+                "Missing companyId or webdeskId.";
         } else {
             window.PathET = function () {
                 return {
