@@ -3,117 +3,498 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dealer Chat Preview</title>
+
+  <title>Response Path Website Preview</title>
 
   <style>
-  html,
-  body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    font-family: Arial, sans-serif;
-  }
+    * {
+      box-sizing: border-box;
+    }
 
-  #dealerFrame {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
-    z-index: 1;
-  }
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      min-height: 100%;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #777;
+      color: #666;
+    }
 
-  #message {
-    display: none;
-    padding: 20px;
-  }
+    body.preview-active {
+      overflow: hidden;
+      background: white;
+    }
 
-  .chat-button {
-    position: fixed;
-    right: 24px;
-    bottom: 24px;
-    width: 64px;
-    height: 64px;
-    border: none;
-    border-radius: 50%;
-    background: #111827;
-    color: white;
-    font-size: 28px;
-    cursor: pointer;
-    z-index: 999999;
-  }
+    /* Preview setup screen */
 
-  .chat-window {
-    display: none;
-    position: fixed;
-    right: 24px;
-    bottom: 100px;
-    width: 340px;
-    background: white;
-    border-radius: 14px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
-    overflow: hidden;
-    z-index: 999999;
-  }
+    #setupScreen {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 30px 16px;
+    }
 
-  .chat-header {
-    padding: 16px;
-    background: #111827;
-    color: white;
-    font-weight: bold;
-  }
+    .preview-card {
+      width: 100%;
+      max-width: 660px;
+      overflow: hidden;
+      background: #f7f7f7;
+      border-radius: 14px;
+      border: 2px solid #888;
+    }
 
-  .chat-body {
-    padding: 18px;
-    line-height: 1.5;
-  }
-</style>
+    .preview-title {
+      margin: 0;
+      padding: 26px 20px;
+      background: white;
+      text-align: center;
+      font-size: 24px;
+      font-weight: 700;
+      color: #666;
+    }
+
+    .preview-content {
+      padding: 0 22px 24px;
+    }
+
+    .section-heading {
+      margin: 20px 0 22px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 700;
+      color: #666;
+    }
+
+    .website-section {
+      padding: 18px 76px;
+      background: white;
+      border: 1px solid #e6e6e6;
+    }
+
+    .account-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .account-box {
+      min-height: 130px;
+      padding: 18px;
+      background: white;
+      border: 1px solid #e6e6e6;
+      text-align: center;
+    }
+
+    .field-label {
+      display: block;
+      margin-bottom: 16px;
+      font-size: 18px;
+      font-weight: 700;
+      color: #666;
+    }
+
+    .text-input {
+      display: block;
+      width: 100%;
+      height: 41px;
+      padding: 8px 12px;
+      border: 1px solid #c8c8c8;
+      border-radius: 4px;
+      background: white;
+      color: #444;
+      font-size: 18px;
+      text-align: center;
+    }
+
+    .text-input:focus {
+      border-color: #1998ff;
+      outline: 1px solid #1998ff;
+    }
+
+    .text-input::placeholder {
+      color: #999;
+    }
+
+    .small-input {
+      max-width: 185px;
+      margin: 0 auto;
+    }
+
+    .button-row {
+      margin-top: 22px;
+      text-align: center;
+    }
+
+    .preview-button {
+      width: 218px;
+      min-height: 44px;
+      border: none;
+      border-radius: 6px;
+      background: #ff8234;
+      color: white;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .preview-button:hover {
+      background: #f27427;
+    }
+
+    .preview-button:focus {
+      outline: 3px solid rgba(255, 130, 52, 0.35);
+      outline-offset: 2px;
+    }
+
+    .instruction {
+      max-width: 390px;
+      margin: 12px auto 0;
+      text-align: center;
+      font-size: 14px;
+      font-style: italic;
+      line-height: 1.5;
+      color: #777;
+    }
+
+    .error-message {
+      display: none;
+      margin: 14px 0 0;
+      text-align: center;
+      font-size: 14px;
+      color: #b42318;
+    }
+
+    /* Website preview */
+
+    #previewScreen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: white;
+    }
+
+    #dealerFrame {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .preview-toolbar {
+      position: fixed;
+      top: 14px;
+      left: 50%;
+      z-index: 10000;
+      display: flex;
+      gap: 8px;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.18);
+      transform: translateX(-50%);
+    }
+
+    .toolbar-button {
+      padding: 8px 14px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background: white;
+      color: #444;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .toolbar-button:hover {
+      background: #f3f3f3;
+    }
+
+    @media (max-width: 620px) {
+      #setupScreen {
+        padding: 12px;
+      }
+
+      .preview-content {
+        padding-right: 14px;
+        padding-left: 14px;
+      }
+
+      .website-section {
+        padding: 18px;
+      }
+
+      .account-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 
 <body>
-  <div id="message">
-    Add a dealer website to the URL like this:
-    <br><br>
-    ?site=https://www.example.com
-  </div>
+  <main id="setupScreen">
+    <section class="preview-card">
+      <h1 class="preview-title">See Response Path on Your Website</h1>
 
-  <iframe id="dealerFrame"></iframe>
+      <div class="preview-content">
+        <p class="section-heading">
+          Enter the website URL of the site you would like to preview:
+        </p>
 
-  <div class="chat-window" id="chatWindow">
-    <div class="chat-header">How can we help?</div>
-    <div class="chat-body">
-      Hi! Are you looking for a new vehicle, service, or trade-in information?
+        <div class="website-section">
+          <label for="websiteUrl" class="field-label" style="display:none;">
+            Website URL
+          </label>
+
+          <input
+            id="websiteUrl"
+            class="text-input"
+            type="text"
+            inputmode="url"
+            placeholder="your website (abc.com)"
+            autocomplete="url"
+          >
+        </div>
+
+        <p class="section-heading">
+          Edit your Response Path account details below:
+        </p>
+
+        <div class="account-grid">
+          <div class="account-box">
+            <label for="companyId" class="field-label">
+              Enter your RP Company ID
+            </label>
+
+            <input
+              id="companyId"
+              class="text-input small-input"
+              type="text"
+              value="p1512"
+            >
+          </div>
+
+          <div class="account-box">
+            <label for="deskId" class="field-label">
+              Enter your RP Desk ID
+            </label>
+
+            <input
+              id="deskId"
+              class="text-input small-input"
+              type="text"
+              value="5cb8d857d50d3300"
+            >
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button id="showPreviewButton" class="preview-button" type="button">
+            Show Preview
+          </button>
+        </div>
+
+        <p class="instruction">
+          Please use an incognito tab or clear your browser cookies<br>
+          to ensure the preview functions properly.
+        </p>
+
+        <p id="errorMessage" class="error-message" role="alert"></p>
+      </div>
+    </section>
+  </main>
+
+  <section id="previewScreen">
+    <div class="preview-toolbar">
+      <button id="backButton" class="toolbar-button" type="button">
+        Edit Preview
+      </button>
+
+      <button id="openWebsiteButton" class="toolbar-button" type="button">
+        Open Website
+      </button>
     </div>
-  </div>
 
-  <button class="chat-button" id="chatButton">💬</button>
+    <iframe
+      id="dealerFrame"
+      title="Dealer website preview"
+      referrerpolicy="no-referrer-when-downgrade"
+    ></iframe>
+  </section>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
-    let dealerSite = params.get("site");
-
+    const setupScreen = document.getElementById("setupScreen");
+    const previewScreen = document.getElementById("previewScreen");
     const dealerFrame = document.getElementById("dealerFrame");
-    const message = document.getElementById("message");
-    const chatButton = document.getElementById("chatButton");
-    const chatWindow = document.getElementById("chatWindow");
 
-    if (dealerSite) {
-      if (!dealerSite.startsWith("http://") && !dealerSite.startsWith("https://")) {
-        dealerSite = "https://" + dealerSite;
+    const websiteUrlInput = document.getElementById("websiteUrl");
+    const companyIdInput = document.getElementById("companyId");
+    const deskIdInput = document.getElementById("deskId");
+
+    const showPreviewButton = document.getElementById("showPreviewButton");
+    const backButton = document.getElementById("backButton");
+    const openWebsiteButton = document.getElementById("openWebsiteButton");
+    const errorMessage = document.getElementById("errorMessage");
+
+    function normalizeUrl(value) {
+      let url = value.trim();
+
+      if (!url) {
+        return "";
       }
 
-      dealerFrame.src = dealerSite;
-    } else {
-      dealerFrame.style.display = "none";
-      message.style.display = "block";
+      if (
+        !url.startsWith("https://") &&
+        !url.startsWith("http://")
+      ) {
+        url = "https://" + url;
+      }
+
+      return url;
     }
 
-    chatButton.addEventListener("click", function () {
-      const isOpen = chatWindow.style.display === "block";
-      chatWindow.style.display = isOpen ? "none" : "block";
+    function isValidUrl(value) {
+      try {
+        const url = new URL(value);
+        return url.protocol === "https:" || url.protocol === "http:";
+      } catch {
+        return false;
+      }
+    }
+
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorMessage.style.display = "block";
+    }
+
+    function clearError() {
+      errorMessage.textContent = "";
+      errorMessage.style.display = "none";
+    }
+
+    function updateBrowserUrl(site, companyId, deskId) {
+      const previewUrl = new URL(window.location.href);
+
+      previewUrl.searchParams.set("site", site);
+      previewUrl.searchParams.set("company", companyId);
+      previewUrl.searchParams.set("desk", deskId);
+
+      window.history.replaceState({}, "", previewUrl);
+    }
+
+    function showPreview() {
+      clearError();
+
+      const site = normalizeUrl(websiteUrlInput.value);
+      const companyId = companyIdInput.value.trim();
+      const deskId = deskIdInput.value.trim();
+
+      if (!site) {
+        showError("Enter a dealership website URL.");
+        websiteUrlInput.focus();
+        return;
+      }
+
+      if (!isValidUrl(site)) {
+        showError("Enter a valid website URL, such as abcdealer.com.");
+        websiteUrlInput.focus();
+        return;
+      }
+
+      if (!companyId) {
+        showError("Enter an RP Company ID.");
+        companyIdInput.focus();
+        return;
+      }
+
+      if (!deskId) {
+        showError("Enter an RP Desk ID.");
+        deskIdInput.focus();
+        return;
+      }
+
+      websiteUrlInput.value = site;
+      dealerFrame.src = site;
+
+      updateBrowserUrl(site, companyId, deskId);
+
+      setupScreen.style.display = "none";
+      previewScreen.style.display = "block";
+      document.body.classList.add("preview-active");
+
+      /*
+        Add the actual Response Path preview or widget script here.
+
+        Example structure:
+
+        const rpScript = document.createElement("script");
+        rpScript.src = "YOUR-RESPONSE-PATH-SCRIPT-URL";
+        rpScript.dataset.companyId = companyId;
+        rpScript.dataset.deskId = deskId;
+        document.body.appendChild(rpScript);
+
+        The exact script URL and required attributes will depend on
+        the installation code provided by Response Path.
+      */
+    }
+
+    function returnToSetup() {
+      previewScreen.style.display = "none";
+      setupScreen.style.display = "flex";
+      document.body.classList.remove("preview-active");
+    }
+
+    function loadValuesFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+
+      const site = params.get("site");
+      const companyId = params.get("company");
+      const deskId = params.get("desk");
+
+      if (site) {
+        websiteUrlInput.value = site;
+      }
+
+      if (companyId) {
+        companyIdInput.value = companyId;
+      }
+
+      if (deskId) {
+        deskIdInput.value = deskId;
+      }
+    }
+
+    showPreviewButton.addEventListener("click", showPreview);
+    backButton.addEventListener("click", returnToSetup);
+
+    openWebsiteButton.addEventListener("click", function () {
+      const site = normalizeUrl(websiteUrlInput.value);
+
+      if (site) {
+        window.open(site, "_blank", "noopener,noreferrer");
+      }
     });
+
+    websiteUrlInput.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        showPreview();
+      }
+    });
+
+    companyIdInput.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        showPreview();
+      }
+    });
+
+    deskIdInput.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        showPreview();
+      }
+    });
+
+    loadValuesFromUrl();
   </script>
 </body>
 </html>
