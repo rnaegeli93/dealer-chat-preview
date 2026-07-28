@@ -1,157 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Response Path Preview</title>
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+    <script>
+        (function () {
 
-  <title>Response Path Preview</title>
+            // Retrieve values from the first page
+            const companyId = sessionStorage.getItem("companyId");
+            const dataSettings = sessionStorage.getItem("dataSettings");
+
+            // If they're missing, go back to the setup page
+            if (!companyId || !dataSettings) {
+                window.location.href = "index.html";
+                return;
+            }
+
+            // Create the Response Path script tag
+            const widgetScript = document.createElement("script");
+
+            widgetScript.id = "path-widget-tag";
+            widgetScript.src =
+                "https://ep.chatpath.com/widget.js?companyId=" +
+                encodeURIComponent(companyId);
+
+            widgetScript.async = true;
+
+            widgetScript.setAttribute("data-company", companyId);
+            widgetScript.setAttribute("data-settings", dataSettings);
+
+            // Add it to the page's <head>
+            document.head.appendChild(widgetScript);
+
+        })();
+    </script>
+
 </head>
 
 <body>
 
-  <main id="previewPage">
+    <h2>Response Path Preview</h2>
 
-    <div id="previewToolbar">
-      <button id="backButton" type="button">
-        Edit Preview
-      </button>
+    <p>
+        Company ID:
+        <strong id="companyDisplay"></strong>
+    </p>
 
-      <span id="previewStatus">
-        Loading preview...
-      </span>
-    </div>
+    <p>
+        Data Settings:
+        <strong id="settingsDisplay"></strong>
+    </p>
 
-    <iframe
-      id="dealerFrame"
-      title="Dealership website preview"
-    ></iframe>
+    <script>
+        document.getElementById("companyDisplay").textContent =
+            sessionStorage.getItem("companyId");
 
-  </main>
-
-  <script>
-    const dealerFrame = document.getElementById("dealerFrame");
-    const backButton = document.getElementById("backButton");
-    const previewStatus = document.getElementById("previewStatus");
-
-    const dealerWebsite =
-      sessionStorage.getItem("dealerWebsite");
-
-    const companyId =
-      sessionStorage.getItem("companyId");
-
-    const dataSettings =
-      sessionStorage.getItem("dataSettings");
-
-    function returnToSetup(message) {
-      if (message) {
-        sessionStorage.setItem(
-          "previewError",
-          message
-        );
-      }
-
-      window.location.href = "index.html";
-    }
-
-    function validatePreviewValues() {
-      if (!dealerWebsite) {
-        returnToSetup(
-          "Please enter a dealership website."
-        );
-
-        return false;
-      }
-
-      if (!companyId) {
-        returnToSetup(
-          "Please enter a Response Path Company ID."
-        );
-
-        return false;
-      }
-
-      if (!dataSettings) {
-        returnToSetup(
-          "Please enter a Response Path data-settings value."
-        );
-
-        return false;
-      }
-
-      return true;
-    }
-
-    function loadDealerWebsite() {
-      dealerFrame.src = dealerWebsite;
-
-      previewStatus.textContent =
-        "Previewing " + dealerWebsite;
-    }
-
-    function loadResponsePathWidget() {
-      const existingScript =
-        document.getElementById("path-widget-tag");
-
-      if (existingScript) {
-        existingScript.remove();
-      }
-
-      const widgetScript =
-        document.createElement("script");
-
-      widgetScript.id = "path-widget-tag";
-
-      widgetScript.src =
-        "https://ep.chatpath.com/widget.js?companyId=" +
-        encodeURIComponent(companyId);
-
-      widgetScript.async = true;
-
-      widgetScript.setAttribute(
-        "data-company",
-        companyId
-      );
-
-      widgetScript.setAttribute(
-        "data-settings",
-        dataSettings
-      );
-
-      widgetScript.addEventListener(
-        "load",
-        function () {
-          previewStatus.textContent =
-            "Response Path preview loaded";
-        }
-      );
-
-      widgetScript.addEventListener(
-        "error",
-        function () {
-          previewStatus.textContent =
-            "The Response Path widget could not be loaded";
-        }
-      );
-
-      document.body.appendChild(widgetScript);
-    }
-
-    backButton.addEventListener(
-      "click",
-      function () {
-        window.location.href = "index.html";
-      }
-    );
-
-    if (validatePreviewValues()) {
-      loadDealerWebsite();
-      loadResponsePathWidget();
-    }
-  </script>
+        document.getElementById("settingsDisplay").textContent =
+            sessionStorage.getItem("dataSettings");
+    </script>
 
 </body>
 </html>
