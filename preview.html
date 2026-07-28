@@ -12,17 +12,15 @@
         const dataSettings = params.get("dataSettings");
         const website = params.get("website");
 
-        const chatScript = document.createElement("script");
-
-        chatScript.id = "path-widget-tag";
-        chatScript.src =
-            "https://ep.chatpath.com/widget.js?companyId=" + companyId;
-
-        chatScript.async = true;
-        chatScript.setAttribute("data-company", companyId);
-        chatScript.setAttribute("data-settings", dataSettings);
-
-        document.head.appendChild(chatScript);
+        document.write(`
+            <script
+                id="path-widget-tag"
+                src="https://ep.chatpath.com/widget.js?companyId=${companyId}"
+                async
+                data-company="${companyId}"
+                data-settings="${dataSettings}">
+            <\/script>
+        `);
     </script>
 
 </head>
@@ -31,35 +29,18 @@
 
     <h1>Response Path Test</h1>
 
-    <p>
-        If the widget is functioning correctly, the chat should appear in the
-        lower-right corner of this page.
-    </p>
+    <p>If the widget is functioning correctly, the chat should appear in the lower-right corner of this page.</p>
 
-    <p>
-        <strong>Company ID:</strong>
-        <span id="companyIdValue"></span>
-    </p>
+    <hr>
 
-    <p>
-        <strong>Data Settings:</strong>
-        <span id="dataSettingsValue"></span>
-    </p>
-
-    <p>
-        <strong>Website:</strong>
-        <span id="websiteValue"></span>
-    </p>
+    <p><strong>Company ID:</strong> <span id="company"></span></p>
+    <p><strong>Data Settings:</strong> <span id="settings"></span></p>
+    <p><strong>Website:</strong> <span id="websiteValue"></span></p>
 
     <script>
-        document.getElementById("companyIdValue").textContent =
-            companyId;
-
-        document.getElementById("dataSettingsValue").textContent =
-            dataSettings;
-
-        document.getElementById("websiteValue").textContent =
-            website;
+        document.getElementById("company").textContent = companyId;
+        document.getElementById("settings").textContent = dataSettings;
+        document.getElementById("websiteValue").textContent = website;
     </script>
 
 </body>
