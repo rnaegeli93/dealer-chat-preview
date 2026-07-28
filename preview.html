@@ -2,45 +2,85 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Response Path Test</title>
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Response Path Preview</title>
+</head>
+
+<body>
+
+    <h1>Response Path Preview</h1>
+
+    <p>
+        The chat should appear in the lower-right corner.
+    </p>
+
+    <p>
+        <strong>Company ID:</strong>
+        <span id="companyIdDisplay"></span>
+    </p>
+
+    <p>
+        <strong>Webdesk ID:</strong>
+        <span id="webdeskIdDisplay"></span>
+    </p>
+
+    <p>
+        <strong>Website:</strong>
+        <span id="websiteDisplay"></span>
+    </p>
 
     <script>
         const params = new URLSearchParams(window.location.search);
 
         const companyId = params.get("companyId");
-        const dataSettings = params.get("dataSettings");
-        const website = params.get("website");
+        const webdeskId =
+            params.get("webdeskId") ||
+            params.get("dataSettings");
 
-        document.write(`
-            <script
-                id="path-widget-tag"
-                src="https://ep.chatpath.com/widget.js?companyId=${companyId}"
-                async
-                data-company="${companyId}"
-                data-settings="${dataSettings}">
-            <\/script>
-        `);
-    </script>
+        const website =
+            params.get("url") ||
+            params.get("website");
 
-</head>
+        document.getElementById("companyIdDisplay").textContent =
+            companyId || "Not provided";
 
-<body>
+        document.getElementById("webdeskIdDisplay").textContent =
+            webdeskId || "Not provided";
 
-    <h1>Response Path Test</h1>
+        document.getElementById("websiteDisplay").textContent =
+            website || "Not provided";
 
-    <p>If the widget is functioning correctly, the chat should appear in the lower-right corner of this page.</p>
+        if (!companyId || !webdeskId) {
+            document.body.insertAdjacentHTML(
+                "beforeend",
+                "<p><strong>Missing companyId or webdeskId.</strong></p>"
+            );
+        } else {
+            window.PathET = function () {
+                return {
+                    env: "production",
+                    companyId: companyId,
+                    webdeskId: webdeskId,
+                    livepreview: true,
+                    source: "website",
+                    locations: []
+                };
+            };
 
-    <hr>
+            const previewBundle =
+                document.createElement("script");
 
-    <p><strong>Company ID:</strong> <span id="company"></span></p>
-    <p><strong>Data Settings:</strong> <span id="settings"></span></p>
-    <p><strong>Website:</strong> <span id="websiteValue"></span></p>
+            previewBundle.id = "preview-bundle-tag";
+            previewBundle.src =
+                "https://ep.chatpath.com/bundle.js";
 
-    <script>
-        document.getElementById("company").textContent = companyId;
-        document.getElementById("settings").textContent = dataSettings;
-        document.getElementById("websiteValue").textContent = website;
+            document.body.appendChild(previewBundle);
+        }
     </script>
 
 </body>
