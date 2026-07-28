@@ -60,17 +60,22 @@
             font-size: 16px;
         }
 
-        button {
-            width: 100%;
-            padding: 13px;
-            border: none;
-            border-radius: 6px;
-            background: #1769e0;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+button {
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 6px;
+    background: rgb(227, 96, 0);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background .2s ease;
+}
+
+button:hover {
+    background: rgb(207, 86, 0);
+}
 
         button:hover {
             background: #0f55bb;
@@ -93,24 +98,31 @@
             </label>
 
             <input
-                type="text"
-                id="website"
-                name="website"
-                placeholder="https://www.dealership.com"
-                required
-            >
+    type="text"
+    id="website"
+    name="website"
+    placeholder="https://www.dealership.com"
+    value="test.com"
+    required
+>
 
-            <label for="companyId">
-                Company ID
-            </label>
+<input
+    type="text"
+    id="companyId"
+    name="companyId"
+    placeholder="p1512"
+    value="p1512"
+    required
+>
 
-            <input
-                type="text"
-                id="companyId"
-                name="companyId"
-                placeholder="p1512"
-                required
-            >
+<input
+    type="text"
+    id="webdeskId"
+    name="webdeskId"
+    placeholder="5cb8d857d50d330012259c56"
+    value="6a68f7193d9cd30013d04c9a"
+    required
+>
 
             <label for="webdeskId">
                 Webdesk ID
