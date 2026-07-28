@@ -326,64 +326,43 @@
 </main>
 
 <script>
+  const websiteInput = document.getElementById("websiteUrl");
+  const companyInput = document.getElementById("companyId");
+  const settingsInput = document.getElementById("dataSettings");
+  const previewButton = document.getElementById("showPreviewButton");
+  const errorMessage = document.getElementById("errorMessage");
 
-const websiteInput = document.getElementById("websiteUrl");
-const companyInput = document.getElementById("companyId");
-const settingsInput = document.getElementById("dataSettings");
-
-const previewButton = document.getElementById("showPreviewButton");
-const errorMessage = document.getElementById("errorMessage");
-
-function normalizeUrl(url){
-
-    url = url.trim();
-
-    if(
-        !url.startsWith("http://") &&
-        !url.startsWith("https://")
-    ){
-        url = "https://" + url;
-    }
-
-    return url;
-
-}
-
-previewButton.addEventListener("click",function(){
+  previewButton.addEventListener("click", function () {
+    const companyId = companyInput.value.trim();
+    const dataSettings = settingsInput.value.trim();
+    const website = websiteInput.value.trim();
 
     errorMessage.style.display = "none";
 
-    const website = normalizeUrl(websiteInput.value);
-
-    if(website === "https://"){
-
-        errorMessage.innerText = "Please enter a website.";
-
-        errorMessage.style.display = "block";
-
-        return;
-
+    if (!companyId) {
+      errorMessage.textContent = "Please enter a Company ID.";
+      errorMessage.style.display = "block";
+      return;
     }
 
-    sessionStorage.setItem(
-        "dealerWebsite",
-        website
-    );
+    if (!dataSettings) {
+      errorMessage.textContent = "Please enter a Data Settings value.";
+      errorMessage.style.display = "block";
+      return;
+    }
 
-    sessionStorage.setItem(
-        "companyId",
-        companyInput.value.trim()
-    );
+    const params = new URLSearchParams();
 
-    sessionStorage.setItem(
-        "dataSettings",
-        settingsInput.value.trim()
-    );
+    params.set("companyId", companyId);
+    params.set("dataSettings", dataSettings);
 
-    window.location.href = "preview.html";
+    if (website) {
+      params.set("website", website);
+    }
 
-});
-
+    window.location.href =
+      "preview.html?" + params.toString();
+  });
 </script>
 
 </body>
