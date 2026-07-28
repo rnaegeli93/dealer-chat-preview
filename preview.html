@@ -1,65 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Response Path Preview</title>
+  <meta charset="UTF-8">
 
-    <script>
-        (function () {
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-            // Retrieve values from the first page
-            const companyId = sessionStorage.getItem("companyId");
-            const dataSettings = sessionStorage.getItem("dataSettings");
+  <title>Response Path Preview</title>
 
-            // If they're missing, go back to the setup page
-            if (!companyId || !dataSettings) {
-                window.location.href = "index.html";
-                return;
-            }
+  <script>
+    const companyId = sessionStorage.getItem("companyId");
+    const dataSettings = sessionStorage.getItem("dataSettings");
 
-            // Create the Response Path script tag
-            const widgetScript = document.createElement("script");
+    if (!companyId || !dataSettings) {
+      window.location.replace("index.html");
+    } else {
+      const widgetScript = document.createElement("script");
 
-            widgetScript.id = "path-widget-tag";
-            widgetScript.src =
-                "https://ep.chatpath.com/widget.js?companyId=" +
-                encodeURIComponent(companyId);
+      widgetScript.id = "path-widget-tag";
 
-            widgetScript.async = true;
+      widgetScript.src =
+        "https://ep.chatpath.com/widget.js?companyId=" +
+        encodeURIComponent(companyId);
 
-            widgetScript.setAttribute("data-company", companyId);
-            widgetScript.setAttribute("data-settings", dataSettings);
+      widgetScript.async = true;
 
-            // Add it to the page's <head>
-            document.head.appendChild(widgetScript);
+      widgetScript.setAttribute(
+        "data-company",
+        companyId
+      );
 
-        })();
-    </script>
+      widgetScript.setAttribute(
+        "data-settings",
+        dataSettings
+      );
 
+      document.head.appendChild(widgetScript);
+    }
+  </script>
 </head>
 
 <body>
+  <h1>Response Path Preview</h1>
 
-    <h2>Response Path Preview</h2>
+  <p>
+    Company ID:
+    <strong id="companyDisplay"></strong>
+  </p>
 
-    <p>
-        Company ID:
-        <strong id="companyDisplay"></strong>
-    </p>
+  <p>
+    Data Settings:
+    <strong id="settingsDisplay"></strong>
+  </p>
 
-    <p>
-        Data Settings:
-        <strong id="settingsDisplay"></strong>
-    </p>
+  <p id="widgetStatus">
+    Loading Response Path chat...
+  </p>
 
-    <script>
-        document.getElementById("companyDisplay").textContent =
-            sessionStorage.getItem("companyId");
+  <script>
+    const companyDisplay =
+      sessionStorage.getItem("companyId");
 
-        document.getElementById("settingsDisplay").textContent =
-            sessionStorage.getItem("dataSettings");
-    </script>
+    const settingsDisplay =
+      sessionStorage.getItem("dataSettings");
 
+    document.getElementById(
+      "companyDisplay"
+    ).textContent = companyDisplay || "";
+
+    document.getElementById(
+      "settingsDisplay"
+    ).textContent = settingsDisplay || "";
+
+    const widgetTag =
+      document.getElementById("path-widget-tag");
+
+    if (widgetTag) {
+      widgetTag.addEventListener("load", function () {
+        document.getElementById(
+          "widgetStatus"
+        ).textContent =
+          "Response Path script loaded.";
+      });
+
+      widgetTag.addEventListener("error", function () {
+        document.getElementById(
+          "widgetStatus"
+        ).textContent =
+          "The Response Path script could not be loaded.";
+      });
+    }
+  </script>
 </body>
 </html>
