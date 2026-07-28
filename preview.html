@@ -1,85 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+    <meta charset="UTF-8">
 
-  <title>Loading Response Path Preview</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Response Path Preview</title>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+
+        const companyId = params.get("companyId");
+        const dataSettings = params.get("dataSettings");
+        const website = params.get("website");
+
+        if (!companyId || !dataSettings) {
+            window.location.href = "index.html";
+        } else {
+            const widgetScript = document.createElement("script");
+
+            widgetScript.id = "path-widget-tag";
+
+            widgetScript.src =
+                "https://ep.chatpath.com/widget.js?companyId=" +
+                encodeURIComponent(companyId);
+
+            widgetScript.async = true;
+
+            widgetScript.setAttribute(
+                "data-company",
+                companyId
+            );
+
+            widgetScript.setAttribute(
+                "data-settings",
+                dataSettings
+            );
+
+            document.head.appendChild(widgetScript);
+        }
+    </script>
 </head>
 
 <body>
-  <p>Loading preview...</p>
 
-  <script>
-    (function () {
-      const params = new URLSearchParams(window.location.search);
+    <h1>Response Path Preview</h1>
 
-      const companyId = params.get("companyId");
-      const dataSettings = params.get("dataSettings");
+    <p>
+        If the widget is functioning correctly, the chat should appear in the
+        lower-right corner of this page.
+    </p>
 
-      if (!companyId || !dataSettings) {
-        document.body.innerHTML =
-          '<h1>Missing preview information</h1>' +
-          '<p>Please return to the setup page and enter both values.</p>' +
-          '<p><a href="index.html">Return to setup</a></p>';
+    <hr>
 
-        return;
-      }
+    <p>
+        Company ID:
+        <strong id="companyIdDisplay"></strong>
+    </p>
 
-      // Allow only the characters expected in these two values.
-      const safeCompanyId = companyId.replace(
-        /[^a-zA-Z0-9_-]/g,
-        ""
-      );
+    <p>
+        Data Settings:
+        <strong id="dataSettingsDisplay"></strong>
+    </p>
 
-      const safeDataSettings = dataSettings.replace(
-        /[^a-zA-Z0-9_-]/g,
-        ""
-      );
+    <p>
+        Website:
+        <strong id="websiteDisplay"></strong>
+    </p>
 
-      const newPage = `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-          <meta charset="UTF-8">
+    <p>
+        <a href="index.html">Edit Preview</a>
+    </p>
 
-          <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0"
-          >
+    <script>
+        document.getElementById("companyIdDisplay").textContent =
+            companyId || "Not provided";
 
-          <title>Response Path Preview</title>
+        document.getElementById("dataSettingsDisplay").textContent =
+            dataSettings || "Not provided";
 
-          <script
-            id="path-widget-tag"
-            src="https://ep.chatpath.com/widget.js?companyId=${safeCompanyId}"
-            async
-            data-company="${safeCompanyId}"
-            data-settings="${safeDataSettings}">
-          <\/script>
-        </head>
+        document.getElementById("websiteDisplay").textContent =
+            website || "Not provided";
+    </script>
 
-        <body>
-          <h1>Response Path Preview</h1>
-
-          <p>
-            The chat should appear in the bottom-right corner.
-          </p>
-
-          <p>
-            <a href="index.html">Edit Preview</a>
-          </p>
-        </body>
-        </html>
-      `;
-
-      document.open();
-      document.write(newPage);
-      document.close();
-    })();
-  </script>
 </body>
 </html>
