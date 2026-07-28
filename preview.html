@@ -11,26 +11,36 @@
   <title>Response Path Preview</title>
 
   <script>
-    const companyId = sessionStorage.getItem("companyId");
-    const dataSettings = sessionStorage.getItem("dataSettings");
+    const params = new URLSearchParams(window.location.search);
+
+    const companyId = params.get("companyId");
+    const dataSettings = params.get("dataSettings");
 
     if (!companyId || !dataSettings) {
       window.location.replace("index.html");
     } else {
-      const safeCompanyId = encodeURIComponent(companyId);
+      const safeCompanyId = companyId.replace(
+        /[^a-zA-Z0-9_-]/g,
+        ""
+      );
+
+      const safeDataSettings = dataSettings.replace(
+        /[^a-zA-Z0-9_-]/g,
+        ""
+      );
 
       document.write(
         '<script ' +
           'id="path-widget-tag" ' +
           'src="https://ep.chatpath.com/widget.js?companyId=' +
-          safeCompanyId +
+          encodeURIComponent(safeCompanyId) +
           '" ' +
           'async ' +
           'data-company="' +
-          companyId.replace(/"/g, "&quot;") +
+          safeCompanyId +
           '" ' +
           'data-settings="' +
-          dataSettings.replace(/"/g, "&quot;") +
+          safeDataSettings +
           '">' +
         '<\/script>'
       );
@@ -39,5 +49,14 @@
 </head>
 
 <body>
+  <h1>Response Path Preview</h1>
+
+  <p>
+    The Response Path chat should appear in the bottom-right corner.
+  </p>
+
+  <p>
+    <a href="index.html">Edit Preview</a>
+  </p>
 </body>
 </html>
