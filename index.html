@@ -1,1 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dealer Chat Preview</title>
 
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      font-family: Arial, sans-serif;
+    }
+
+    #dealerFrame {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    #message {
+      display: none;
+      padding: 20px;
+    }
+
+    .chat-button {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      width: 64px;
+      height: 64px;
+      border: none;
+      border-radius: 50%;
+      background: #111827;
+      color: white;
+      font-size: 28px;
+      cursor: pointer;
+      z-index: 9999;
+    }
+
+    .chat-window {
+      display: none;
+      position: fixed;
+      right: 24px;
+      bottom: 100px;
+      width: 340px;
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+      z-index: 9999;
+    }
+
+    .chat-header {
+      padding: 16px;
+      background: #111827;
+      color: white;
+      font-weight: bold;
+    }
+
+    .chat-body {
+      padding: 18px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="message">
+    Add a dealer website to the URL like this:
+    <br><br>
+    ?site=https://www.example.com
+  </div>
+
+  <iframe id="dealerFrame"></iframe>
+
+  <div class="chat-window" id="chatWindow">
+    <div class="chat-header">How can we help?</div>
+    <div class="chat-body">
+      Hi! Are you looking for a new vehicle, service, or trade-in information?
+    </div>
+  </div>
+
+  <button class="chat-button" id="chatButton">💬</button>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    let dealerSite = params.get("site");
+
+    const dealerFrame = document.getElementById("dealerFrame");
+    const message = document.getElementById("message");
+    const chatButton = document.getElementById("chatButton");
+    const chatWindow = document.getElementById("chatWindow");
+
+    if (dealerSite) {
+      if (!dealerSite.startsWith("http://") && !dealerSite.startsWith("https://")) {
+        dealerSite = "https://" + dealerSite;
+      }
+
+      dealerFrame.src = dealerSite;
+    } else {
+      dealerFrame.style.display = "none";
+      message.style.display = "block";
+    }
+
+    chatButton.addEventListener("click", function () {
+      const isOpen = chatWindow.style.display === "block";
+      chatWindow.style.display = isOpen ? "none" : "block";
+    });
+  </script>
+</body>
+</html>
