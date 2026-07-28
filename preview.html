@@ -2,13 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>Response Path Preview</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Response Path Test</title>
 
     <script>
         const params = new URLSearchParams(window.location.search);
@@ -17,73 +12,54 @@
         const dataSettings = params.get("dataSettings");
         const website = params.get("website");
 
-        if (!companyId || !dataSettings) {
-            window.location.href = "index.html";
-        } else {
-            const widgetScript = document.createElement("script");
+        const chatScript = document.createElement("script");
 
-            widgetScript.id = "path-widget-tag";
+        chatScript.id = "path-widget-tag";
+        chatScript.src =
+            "https://ep.chatpath.com/widget.js?companyId=" + companyId;
 
-            widgetScript.src =
-                "https://ep.chatpath.com/widget.js?companyId=" +
-                encodeURIComponent(companyId);
+        chatScript.async = true;
+        chatScript.setAttribute("data-company", companyId);
+        chatScript.setAttribute("data-settings", dataSettings);
 
-            widgetScript.async = true;
-
-            widgetScript.setAttribute(
-                "data-company",
-                companyId
-            );
-
-            widgetScript.setAttribute(
-                "data-settings",
-                dataSettings
-            );
-
-            document.head.appendChild(widgetScript);
-        }
+        document.head.appendChild(chatScript);
     </script>
+
 </head>
 
 <body>
 
-    <h1>Response Path Preview</h1>
+    <h1>Response Path Test</h1>
 
     <p>
         If the widget is functioning correctly, the chat should appear in the
         lower-right corner of this page.
     </p>
 
-    <hr>
-
     <p>
-        Company ID:
-        <strong id="companyIdDisplay"></strong>
+        <strong>Company ID:</strong>
+        <span id="companyIdValue"></span>
     </p>
 
     <p>
-        Data Settings:
-        <strong id="dataSettingsDisplay"></strong>
+        <strong>Data Settings:</strong>
+        <span id="dataSettingsValue"></span>
     </p>
 
     <p>
-        Website:
-        <strong id="websiteDisplay"></strong>
-    </p>
-
-    <p>
-        <a href="index.html">Edit Preview</a>
+        <strong>Website:</strong>
+        <span id="websiteValue"></span>
     </p>
 
     <script>
-        document.getElementById("companyIdDisplay").textContent =
-            companyId || "Not provided";
+        document.getElementById("companyIdValue").textContent =
+            companyId;
 
-        document.getElementById("dataSettingsDisplay").textContent =
-            dataSettings || "Not provided";
+        document.getElementById("dataSettingsValue").textContent =
+            dataSettings;
 
-        document.getElementById("websiteDisplay").textContent =
-            website || "Not provided";
+        document.getElementById("websiteValue").textContent =
+            website;
     </script>
 
 </body>
